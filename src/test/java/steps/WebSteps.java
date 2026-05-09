@@ -2,7 +2,6 @@ package steps;
 
 import com.codeborne.selenide.Condition;
 import io.qameta.allure.Step;
-import testData.TestData;
 
 import static com.codeborne.selenide.Selectors.withText;
 import static com.codeborne.selenide.Selenide.*;
@@ -10,28 +9,25 @@ import static com.codeborne.selenide.Selenide.$;
 
 
 public class WebSteps {
-    TestData testData = new TestData();
-    @Step("Открываем главную страницу")
-    public void openMainPage() {
-        open("https://github.com");
+
+    @Step("Открываем страницу юзера на github")
+    public void openUserPage() {
+        open("https://github.com/kofeechek");
     }
-    @Step("Нажимаем на поиск")
-    public void clickSearchButton() {
-        $x("//button[@data-action='click:qbsearch-input#handleExpand']").click();
+
+    @Step("Заходим в раздел Repositories")
+    public void clickRepositories() {
+        $("a[href='/kofeechek?tab=repositories']").click();
     }
-    @Step("Поиск репозитория")
-    public void searchRepository() {
-        $x("//input[@id='query-builder-test']").sendKeys(testData.repository);
-        $x("//input[@id='query-builder-test']").submit();
+
+    @Step("Переходим в репозиторий HW_9_Allure")
+    public void clickAllureRepository() {
+        $("a[href='/kofeechek/HW_9_Allure']").click();
     }
-    @Step("Нажимаем на Issues")
-    public void clickIssues() {
-        $x("//a[@href='/LazVal/qaGuru-Allure']").click();
-        $("#issues-tab").click();
-    }
-    @Step("Проверка наличия Issues")
+
+    @Step("Раздел Issues существует")
     public void existIssues() {
-        $(withText("TestIssues")).should(Condition.exist);
+        $(withText("Issues")).should(Condition.exist);
     }
 
 }

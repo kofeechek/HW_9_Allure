@@ -1,12 +1,13 @@
 import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.logevents.SelenideLogger;
 import io.qameta.allure.*;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import steps.WebSteps;
-import testData.TestData;
 import io.qameta.allure.selenide.AllureSelenide;
+import steps.WebSteps;
 
 import static com.codeborne.selenide.Selectors.withText;
 import static com.codeborne.selenide.Selenide.*;
@@ -14,6 +15,10 @@ import static com.codeborne.selenide.logevents.SelenideLogger.step;
 
 
 public class IssueTest {
+    @AfterEach
+    void closeWebDriver() {
+        Selenide.closeWebDriver();
+    }
     @Test
     @Feature("Github Issue")
     @Story("Создание Issue")
@@ -21,20 +26,16 @@ public class IssueTest {
     @DisplayName("Чистый Selenide (с Listener)")
     @Tag("Test")
     @Owner("SvetlitskayaTS")
-    public void testIssueSearch() {
+    public void issueSearchListenerTest() {
         SelenideLogger.addListener("allure", new AllureSelenide());
-        open("https://github.com");
+        open("https://github.com/kofeechek");
 
-        $x("//button[@data-action='click:qbsearch-input#handleExpand']").click();
-        $x("//input[@id='query-builder-test']").sendKeys("kofeechek/HW_9_Allure");
-        $x("//input[@id='query-builder-test']").submit();
+        $("a[href='/kofeechek?tab=repositories']").click();
+        $("a[href='/kofeechek/HW_9_Allure']").click();
 
-        $x("//a[@href='/LazVal/qaGuru-Allure']").click();
-        $("#issues-tab").click();
-        $(withText("TestIssues")).should(Condition.exist);
+        $(withText("Issues")).should(Condition.exist);
     }
 
-    TestData testData = new TestData();
     @Test
     @Feature("Github Issue")
     @Story("Создание Issue")
@@ -42,30 +43,25 @@ public class IssueTest {
     @DisplayName("Лямбда шаги через step (name, () -> {})")
     @Tag("Test")
     @Owner("SvetlitskayaTS")
-    public void testIssueSearchLambda() {
+    public void issueSearchLambdaTest() {
         SelenideLogger.addListener("allure", new AllureSelenide());
 
-        step("Открываем главную страницу", () -> {
-            open("https://github.com");
+        step("Открываем страницу юзера", () -> {
+            open("https://github.com/kofeechek");
         });
 
-        step("Нажимаем на поиск", () -> {
-            $x("//button[@data-action='click:qbsearch-input#handleExpand']").click();
+        step("Заходим в раздел Repositories", () -> {
+            $("a[href='/kofeechek?tab=repositories']").click();
         });
 
-        step("Ищем репозиторий", () -> {
-            $x("//input[@id='query-builder-test']").sendKeys(testData.repository);
-            $x("//input[@id='query-builder-test']").submit();
+        step("Переходим в репозиторий HW_9_Allure", () -> {
+            $("a[href='/kofeechek/HW_9_Allure']").click();
         });
 
-        step("Нажимаем на Issues", () -> {
-            $x("//a[@href='/kofeechek/HW_9_Allure']").click();
-            $("#issues-tab").click();
+        step("Раздел Issues существует", () -> {
+            $(withText("Issues")).should(Condition.exist);
         });
 
-        step("Проверка наличия Issue", () -> {
-            $(withText("TestIssues")).should(Condition.exist);
-        });
     }
 
     @Test
@@ -75,13 +71,12 @@ public class IssueTest {
     @DisplayName("Шаги с аннотацией @Step")
     @Tag("Test")
     @Owner("SvetlitskayaTS")
-    public void testIssueSearchSteps() {
+    public void issueSearchStepsTest() {
         WebSteps steps = new WebSteps();
 
-        steps.openMainPage();
-        steps.clickSearchButton();
-        steps.searchRepository();
-        steps.clickIssues();
+        steps.openUserPage();
+        steps.clickRepositories();
+        steps.clickAllureRepository();
         steps.existIssues();
     }
 
